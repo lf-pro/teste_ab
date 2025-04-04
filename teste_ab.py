@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # Configuração da interface
 st.set_page_config(page_title="Análise Bayesiana de Teste A/B", layout="centered")
 st.title("📊 Análise Bayesiana de Teste A/B")
-st.write("Este aplicativo calcula a probabilidade de uma variação ser melhor que o controle com um modelo Bayesiano.")
+st.write("Este aplicativo calcula a probabilidade de uma variação ser melhor que o controle usando inferência Bayesiana.")
 
 # Layout em colunas para separar os grupos
 col1, col2 = st.columns(2)
@@ -59,6 +59,39 @@ st.metric("Probabilidade da Variação ser melhor", f"{prob_variation_better:.2%
 # Exibir a explicação do resultado
 st.subheader("📝 Explicação do Resultado")
 st.info(explanation)
+
+# 📌 Adicionar uma seção explicativa de como o cálculo foi feito
+with st.expander("📊 Como os cálculos foram realizados?"):
+    st.markdown("""
+    ### 1️⃣ Cálculo da Receita por Visita (RPV)
+    O RPV é calculado dividindo a **Receita Total** pelo número de **Sessões**:
+    \[
+    RPV = \frac{\text{Receita Total}}{\text{Sessões}}
+    \]
+    
+    ### 2️⃣ Estimativa do Desvio Padrão
+    Como estamos tratando de médias, usamos a seguinte estimativa para o desvio padrão:
+    \[
+    \sigma = \frac{RPV}{\sqrt{\text{Sessões}}}
+    \]
+    
+    ### 3️⃣ Simulação Bayesiana
+    Geramos **100.000 amostras** a partir de distribuições normais para cada grupo:
+    \[
+    X_{control} \sim \mathcal{N}(\mu_{control}, \sigma_{control})
+    \]
+    \[
+    X_{variação} \sim \mathcal{N}(\mu_{variação}, \sigma_{variação})
+    \]
+
+    ### 4️⃣ Cálculo da Probabilidade Bayesiana
+    Finalmente, calculamos a fração de amostras da variação que são maiores do que as do controle:
+    \[
+    P(\text{Variação} > \text{Controle}) = \frac{\sum (X_{variação} > X_{control})}{100.000}
+    \]
+    
+    Quanto maior essa probabilidade, maior a chance de a variação ser melhor. 🎯
+    """)
 
 # Criar gráfico da distribuição
 fig, ax = plt.subplots(figsize=(10, 5))
